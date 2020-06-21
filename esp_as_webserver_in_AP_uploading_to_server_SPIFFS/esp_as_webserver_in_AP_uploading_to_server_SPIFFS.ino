@@ -5,6 +5,8 @@
 
 ESP8266WebServer server(80);     //server object listening to port 80
 
+File fsUploadFile;              //a file object to temporary store received file
+
 const char *ssid = "baman-baman";
 const char *password = "dobaarbaman";
 
@@ -15,8 +17,10 @@ const char *password = "dobaarbaman";
 String getContentType(String filename);
 //sends the requested file back to browser if it exists
 bool handleFileRead(String path);
-/*****************************/
+//uploads a new file to the SPIFFS
+void handleFileUpload();
 
+/*****************************/
 
 void setup() {
   Serial.begin(115200);
@@ -34,25 +38,40 @@ void setup() {
   SPIFFS.begin();         //Begins the SPI Flash file system
 
   /*****SERVER-CONFIG*******/
-  //we have written an inline function which serves file if exist
-  //otherwise goes into if statement and sends 404
+  //handling file uploads
+  server.on("/upload", HTTP_GET, []() {
+      if (!handleFileRead("/upload.html")){
+      server.send(404, "text/plain", "404: Not Found");
+      }
+    
+    });
+  /******err*********/
+  server.on("/upload", HTTP_POST, 
+    [](){}, 
+    handleFileUpload
+    );
+ /**********************/
+ 
+  //handling all other requests of server
   server.onNotFound([](){
-    if(!handleFileRead(server.uri())){
+    if (!handleFileRead(server.uri())){
       server.send(404, "text/plain", "404: Not Found");
     }
     });
+  
+  /***********************/ 
 
-  /***********************/  
-    
   /******START-SERVER*****/
-  server.begin();       //startinf the server
+  server.begin();       //starting the server
   Serial.println("HTTP server started");
 
 }
 
 void loop() {
-  server.handleClient();  //Keep listening to request from clients      
+  server.handleClient();  //Keep listening to request from clients  
+
 }
+
 
 
 /*****FUNCTION-DESCRIPTION**********/
@@ -89,4 +108,31 @@ bool handleFileRead(String path) {
   //if does not exists then return false
   Serial.println("\t File Not Found");
   return false;
+}
+
+//receive file from browser and write it to SPIFFS on webserver
+
+void handleFileUpload(){
+  HTTPUpload& upload = server.upload();                //local object referncing
+  if (upload.status == UPLOAD_FILE_START) {         //phase 1
+    String filename = upload.filename;                //getting file name
+    if(!filename.startsWith("/")) filename = "/" + filename;       //puting the file in folder
+    Serial.print("handleFileUpload name: "); Serial.println(filename);        
+    fsUploadFile = SPIFFS.open(filename, "w");            //this creates file in write mode if doesnt exist or overwrite if exists
+    //filename = String();            //clear memory    
+  } else if (upload.status == UPLOAD_FILE_WRITE) {     //phase 2
+      if(fsUploadFile) {                                    //if ready for upload
+        fsUploadFile.write(upload.buf, upload.currentSize);   //write received bytes to file
+      }
+  } else if (upload.status == UPLOAD_FILE_END) {    //phase 3
+      if(fsUploadFile) {                                  //if file is created
+        fsUploadFile.close();                           //close and free the file object
+        Serial.print("handleFileUpload size: "); Serial.println(upload.totalSize);
+        //after uploading or receiving the complete file respond the clint to new location (success page)
+        server.sendHeader("Location", "/success.html");
+        server.send(303);
+      }else {                                         //if file creation failed
+      server.send(500, "text/plain", "500: couldn't create file");
+      }
+    }
 }
