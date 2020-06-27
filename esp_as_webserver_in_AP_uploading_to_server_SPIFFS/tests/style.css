@@ -1,0 +1,24 @@
+* {
+    width: 800px;
+    text-align: center;
+    box-sizing: border-box;
+    align-content: center;
+    font-family: sans-serif;
+}
+
+.main-box {
+    background-color: #ef8888;
+    height: 80px;
+    width : 40%;
+    align-content: center;
+    margin-left: 30%;
+}
+
+.main-box a:link,
+.main-box a:visited{
+    color: #a30000;
+    text-decoration: none;
+    font-size: 20px;
+
+}
+
