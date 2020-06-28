@@ -1,0 +1,8 @@
+using
+Arduino IDE - 1.8.12
+ESP8266Board - 2.5 or 2.7.1
+python - 2.7.18
+
+Successfully sent over the air updates
+Serial monitor dosent respond when network port is selected and Serial cable is connected to port
+therefore i used termite(software) to moniter the response from esp
