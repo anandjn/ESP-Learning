@@ -1,0 +1,22 @@
+<! DOCTYPE html>
+<html>
+    <head>
+        <title>websocket implementation</title>
+        <link type="text/css" href="style.css" rel="stylesheet">
+        <script src="Chart.min.js" type="text/javascript"></script>
+        <meta content="width=device-width", initial-scale=3.0 name="viewport">
+    </head>
+    <body>
+        <div class="box">
+            <h1>LED Brightness controller</h1>
+            <input id="r" type="range" min="0" max="1023" value ="511" step="1" oninput="sendSig()">
+            <p>RED</p>
+            <input id ="y" type="range" min="0" max="1023" value ="511" step="1" oninput="sendSig()">
+            <p>YELLOW</p>
+            
+        </div>
+        <canvas id="myChart" height="400" width="600"></canvas>
+        <script src="script.js" type="text/javascript"></script>
+    </body>
+    
+</html>

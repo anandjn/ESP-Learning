@@ -1,0 +1,11 @@
+* {
+    font-family: sans-serif;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.box {
+    margin-top: 25px;
+    background-image: linear-gradient(rgba(129, 217, 250, 0.69), rgba(255, 124, 76, 0.53));
+    width: 75%;
+}
