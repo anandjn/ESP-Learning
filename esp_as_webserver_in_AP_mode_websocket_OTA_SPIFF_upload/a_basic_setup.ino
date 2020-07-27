@@ -65,7 +65,6 @@ void startWebSocket(){
 }
 
 /*****************************************************/
-
 void startServer(){
   server.on("/edit.html", HTTP_POST, [](){
       server.send(200, "text/plain", "");
@@ -75,4 +74,28 @@ void startServer(){
   Serial.println("HTTP server started");
 }
 
+/*****************************************************/
+void sendDataToClient(){
+  String json = "[";
+  for(int i = 0; i < 7 ; ++i){
+    json += "{";
+    json += "\"value\" : ";
+    json += String(bands[i]);
+    json += "}";
+    //don't add comma at last element, instead append "]"
+    if (i == 6){
+      json += "]";
+      continue;  
+    }
+    json += ",";
+  }
+  webSocket.broadcastTXT(json.c_str(), json.length());
+}
+/*****************************************************/
+void randomNumbers(){
+  for(int i = 0; i < 7 ; ++i){
+    bands[i] = rand()%1023;
+    delayMicroseconds(36);
+  }
+}
 /*****************************************************/

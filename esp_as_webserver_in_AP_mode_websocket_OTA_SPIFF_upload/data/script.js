@@ -7,15 +7,18 @@ var myChart = new Chart(chartBox, {
         labels: ['63Hz', '160Hz', '400Hz', '1kHz', '2.5kHz', '6.25kHz', '16kHz'],
         datasets:[{
             label:'amplitude of frequency',
-            data: [452, 56, 865, 1024, 50, 750, 200],
+            data: [],
             backgroundColor : "#555"
         }]
     },
     options: {
+        responsive: false,
+        animation: false,
         scales: {
             yAxes: [{
                 ticks: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    max: 1023
                 }
             }]
         }
@@ -31,8 +34,16 @@ connection.onerror = function () {
     console.log('WebSocket Error ', error);
 };
 
-connection.onmessage = function (e) {
-    console.log('Server ', e.data);
+connection.onmessage = function (event) {
+    console.log('Server ', event.data);
+    data = JSON.parse(event.data);
+    myChart.data.datasets[0].data= [];
+    
+    data.forEach(function(element) {
+       myChart.data.datasets[0].data.push(element.value); 
+    });
+    
+    myChart.update();         
 };
 
 connection.onclose = function () {

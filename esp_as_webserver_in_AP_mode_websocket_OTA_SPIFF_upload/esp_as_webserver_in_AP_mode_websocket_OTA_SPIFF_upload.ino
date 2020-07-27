@@ -15,12 +15,7 @@ const char *ssid = "baman-baman";
 const char *password = "dobaarbaman";
 
 //message for client
-
-String message = "Hello World!";
-//long long previousMillis= millis();
-
-//OTA-credentials
-
+int bands[7] = {512, 128, 256, 1023, 64, 755, 68};
 
 //connections
 #define LED_RED     D1
@@ -46,10 +41,8 @@ void loop() {
   webSocket.loop();             //constantly check for websocket events
   server.handleClient();        //run the server
   ArduinoOTA.handle();          //listen to OTA updates
+  sendDataToClient();           //sends array data to client
 
-  //if (millis() - previousMillis > 1000){
-    webSocket.broadcastTXT(message.c_str(), message.length());
-    //previousMillis = millis();
-  //}
-
+  /************************/
+  randomNumbers();
 }
